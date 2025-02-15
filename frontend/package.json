@@ -16,6 +16,14 @@
     "react-use": "^17.6.0",
     "styled-components": "^5.3.5"
   },
+  "cssnano": {
+    "preset": [
+      "default",
+      {
+        "calc": false
+      }
+    ]
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -36,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cssnano": "^7.0.6"
   }
 }
