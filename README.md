@@ -13,7 +13,7 @@ Check out the [post](https://testdriven.io/blog/fastapi-react/).
    ```sh
    $ cd backend
    $ python3.9 -m venv env
-   $ source ./env/Scripts/activate
+   $ source env/Scripts/activate
    (env)$ pip install -r requirements.txt
    (env)$ python main.py
    ```
