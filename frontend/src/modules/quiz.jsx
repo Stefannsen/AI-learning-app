@@ -15,6 +15,25 @@ import { InfoHome } from "../layout/back-home";
 import { InfoIconContainer } from "../styled";
 import { Spinner } from "../layout/spinner";
 
+const answerStatus = {
+  BLURRED: "BLURRED",
+  CORRECT: "CORRECT",
+  WRONG: "WRONG",
+};
+
+const getOptionStatisColor = ({ status, theme }) => {
+  switch (status) {
+    case answerStatus.BLURRED:
+      return "#a0a6ab";
+    case answerStatus.CORRECT:
+      return theme.colors.green7;
+    case answerStatus.WRONG:
+      return theme.colors.red7;
+    default:
+      return "#a0a6ab";
+  }
+};
+
 const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,7 +49,7 @@ const QuizdCard = styled(Card)`
   flex-direction: column;
   gap: 16px;
   background-color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(204, 187, 187, 0.1);
   height: 280px;
   width: 100vh;
   position: relative;
@@ -55,6 +74,12 @@ const OptionsContainer = styled.div`
 const OptionButton = styled(Button)`
   height: 100%;
   color: white;
+
+  background-color: ${getOptionStatisColor};
+
+  &:hover {
+    background-color: ${({ status }) => !status && "#868a8e"};
+  }
 `;
 
 const ButtonText = styled(Text)`
@@ -67,6 +92,30 @@ const Score = styled(Heading)`
   text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
+const getBlurredList = () =>
+  Array.from({ length: 4 }, () => answerStatus.BLURRED);
+
+const getCorrectAnswerIndex = (question) => {
+  if (question.option_1.is_correct) {
+    return 0;
+  }
+
+  if (question.option_2.is_correct) {
+    return 1;
+  }
+
+  if (question.option_3.is_correct) {
+    return 2;
+  }
+
+  if (question.option_4.is_correct) {
+    return 3;
+  }
+};
+
+const timeout = (seconds) =>
+  new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+
 const Quiz = ({ input }) => {
   const { width, height } = useWindowSize();
 
@@ -75,6 +124,7 @@ const Quiz = ({ input }) => {
   const [score, setScore] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [optionStatus, setOptionStatus] = useState([]);
   // const [isOptionSelected, setIsOptionSelected] = useState(false);
 
   const isQuizFinished = currentIndex === questions.length;
@@ -101,14 +151,27 @@ const Quiz = ({ input }) => {
   }, [getQuastions]);
 
   const selectAnswer = useCallback(
-    (answer) => {
+    async (answer, index) => {
       const { is_correct } = answer;
       if (is_correct) {
         setScore((prevScore) => prevScore + 1);
+        const newRowStatus = getBlurredList();
+        newRowStatus[index] = answerStatus.CORRECT;
+        setOptionStatus(newRowStatus);
+      } else {
+        const newRowStatus = getBlurredList();
+        const currentQuestion = questions[currentIndex];
+        const correctOptionIndex = getCorrectAnswerIndex(currentQuestion);
+        newRowStatus[index] = answerStatus.WRONG;
+        newRowStatus[correctOptionIndex] = answerStatus.CORRECT;
+        setOptionStatus(newRowStatus);
       }
+
+      await timeout(5);
+      setOptionStatus([]);
       setCurrentIndex((prevIndex) => prevIndex + 1);
     },
-    [setScore, setCurrentIndex]
+    [questions, currentIndex, setScore, setCurrentIndex, setOptionStatus]
   );
 
   const reload = useCallback(() => {
@@ -162,26 +225,26 @@ const Quiz = ({ input }) => {
         </QuestionContainer>
         <OptionsContainer>
           <OptionButton
-            color="blue"
-            onClick={() => selectAnswer(currentQuestion.option_1)}
+            status={optionStatus[0]}
+            onClick={() => selectAnswer(currentQuestion.option_1, 0)}
           >
             <ButtonText size="2">{currentQuestion.option_1.text}</ButtonText>
           </OptionButton>
           <OptionButton
-            color="green"
-            onClick={() => selectAnswer(currentQuestion.option_2)}
+            status={optionStatus[1]}
+            onClick={() => selectAnswer(currentQuestion.option_2, 1)}
           >
             <ButtonText size="2">{currentQuestion.option_2.text}</ButtonText>
           </OptionButton>
           <OptionButton
-            color="red"
-            onClick={() => selectAnswer(currentQuestion.option_3)}
+            status={optionStatus[2]}
+            onClick={() => selectAnswer(currentQuestion.option_3, 2)}
           >
             <ButtonText size="2">{currentQuestion.option_3.text}</ButtonText>
           </OptionButton>
           <OptionButton
-            color="yellow"
-            onClick={() => selectAnswer(currentQuestion.option_4)}
+            status={optionStatus[3]}
+            onClick={() => selectAnswer(currentQuestion.option_4, 3)}
           >
             <ButtonText size="2">{currentQuestion.option_4.text}</ButtonText>
           </OptionButton>
