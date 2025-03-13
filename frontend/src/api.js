@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const LOCALHOST_BASE = "http://localhost:8000";
-const DEPLOYMENT_BASE = process.env.PROD_BASE;
-const BASE = DEPLOYMENT_BASE || LOCALHOST_BASE;
+// const LOCALHOST_BASE = "http://localhost:8000";
+// const DEPLOYMENT_BASE = process.env.PROD_BASE;
+// const BASE = LOCALHOST_BASE || DEPLOYMENT_BASE;
+const BASE = "https://ai-learning-app-delta.vercel.app";
 
 const api = {
   getNotes: (text) =>
