@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const BASE = "http://localhost:8000";
+const LOCALHOST_BASE = "http://localhost:8000";
+const DEPLOYMENT_BASE = process.env.PROD_BASE;
+const BASE = DEPLOYMENT_BASE || LOCALHOST_BASE;
 
 const api = {
   getNotes: (text) =>
