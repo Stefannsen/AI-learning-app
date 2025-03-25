@@ -194,6 +194,10 @@ const Quiz = ({ input }) => {
     return <Reload reload={reload} />;
   }
 
+  if (questions.length === 0) {
+    return;
+  }
+
   if (isQuizFinished) {
     return (
       <>
