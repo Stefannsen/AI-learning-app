@@ -1,4 +1,5 @@
 from langchain_core.pydantic_v1 import BaseModel, Field
+import random
 from .service import get_data
 
 
@@ -21,5 +22,14 @@ Scrie 10 intrebari si variante de raspuns pentru lectia cu titlul: {title}\n
 Optiunea corecta trebuie alease la intamplare in una din cele 4 optiuni.
 """
 
+def shuffle_options(response):
+  for question in response['data']:
+      options = [question['option_1'], question['option_2'], question['option_3'], question['option_4']]
+      random.shuffle(options)
+      question['option_1'], question['option_2'], question['option_3'], question['option_4'] = options
+  return response
+
 def get_quiz(text):
-    return get_data(text, template, Quiz)
+    response = get_data(text, template, Quiz)
+    adapted_response = shuffle_options(response)
+    return adapted_response

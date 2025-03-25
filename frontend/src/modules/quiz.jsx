@@ -129,7 +129,7 @@ const Quiz = ({ input }) => {
 
   const isQuizFinished = currentIndex === questions.length;
   const isQuizAvaiable = Boolean(questions.length);
-  const hasMaxScore = score === questions.length;
+  const hasMaxScore = score === questions.length && questions.length > 0;
 
   const currentQuestion = isQuizAvaiable ? questions[currentIndex] : undefined;
 
@@ -167,7 +167,7 @@ const Quiz = ({ input }) => {
         setOptionStatus(newRowStatus);
       }
 
-      await timeout(5);
+      await timeout(3);
       setOptionStatus([]);
       setCurrentIndex((prevIndex) => prevIndex + 1);
     },
